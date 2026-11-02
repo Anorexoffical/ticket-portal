@@ -78,7 +78,43 @@ router.get('/resources/:table', requireAuth, asyncHandler(async (req, res) => {
   let data;
   if (req.params.table === 'bookings') {
     data = await model.findMany({ ...args, include: { agent: true, flight: true, passengers: true, payments: true, confirmer: true } });
-    data = data.map(booking => ({ ...booking, flights: booking.flight, profiles: booking.agent ? { agency_name: booking.agent.agencyName, whatsapp: booking.agent.whatsapp, email: booking.agent.email, delivery_pref: booking.agent.deliveryPref } : null }));
+    data = data.map(booking => ({
+      ...booking,
+      flights: booking.flight ? {
+        id: booking.flight.id,
+        airline: booking.flight.airline,
+        flight_no: booking.flight.flightNo,
+        origin: booking.flight.origin,
+        destination: booking.flight.destination,
+        departure_at: booking.flight.departureAt,
+        arrival_at: booking.flight.arrivalAt,
+        price: booking.flight.price,
+      } : null,
+      profiles: booking.agent ? { agency_name: booking.agent.agencyName, agent_no: booking.agent.agencyName, whatsapp: booking.agent.whatsapp, email: booking.agent.email, delivery_pref: booking.agent.deliveryPref } : null,
+      confirmer: booking.confirmer ? { agency_name: booking.confirmer.agencyName } : null,
+      payments: (booking.payments || []).map(p => ({
+        id: p.id,
+        booking_id: p.bookingId,
+        agent_id: p.agentId,
+        amount: p.amount,
+        method: p.method,
+        note: p.note,
+        recorded_by: p.recordedBy,
+        created_at: p.createdAt,
+      })),
+      passengers: (booking.passengers || []).map(p => ({
+        id: p.id,
+        booking_id: p.bookingId,
+        title: p.title,
+        first_name: p.firstName,
+        last_name: p.lastName,
+        pax_type: p.paxType,
+        dob: p.dob instanceof Date ? p.dob.toISOString().slice(0, 10) : p.dob,
+        passport_number: p.passportNumber,
+        passport_expiry: p.passportExpiry instanceof Date ? p.passportExpiry.toISOString().slice(0, 10) : p.passportExpiry,
+        nationality: p.nationality,
+      })),
+    }));
   } else if (req.params.table === 'flights_with_seats') {
     data = await model.findMany({ ...args, include: { bookings: { where: { status: { in: ['on_hold', 'confirmed', 'issued'] } }, select: { passengers: { select: { id: true } } } } } });
     data = data.map(flight => ({ ...flight, seats_left: flight.totalSeats - flight.bookings.reduce((sum, booking) => sum + booking.passengers.length, 0), bookings: undefined }));
