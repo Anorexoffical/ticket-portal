@@ -62,6 +62,7 @@ function Logo({ name }) {
 
 function PendingStrip({ admin }) {
   const [s, setS] = useState(null);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     supabase.from('pending_payments').select('agent_id,balance,paid_amount,status,hold_expires_at').then(({ data }) => {
       if (!data) return;
@@ -69,10 +70,30 @@ function PendingStrip({ admin }) {
       setS({ total: rows.reduce((t, r) => t + Number(r.balance), 0), n: rows.length, agents: new Set(rows.map(r => r.agent_id)).size });
     });
   }, []);
-  if (!s || s.n === 0) return null;
-  return admin
-    ? <div className="paystrip admin"><span>Pending from agents: <b>{money(s.total)}</b> ({s.agents} agent(s), {s.n} booking(s))</span><Link href="/admin/accounts">Open Accounts &amp; reminders</Link></div>
-    : <div className="paystrip"><span>Your pending balance: <b>{money(s.total)}</b> on {s.n} booking(s). Please pay to keep your bookings safe.</span><Link href="/agent/pay">How to pay</Link></div>;
+  if (!admin) {
+    if (!s || s.n === 0) return null;
+    return <div className="paystrip"><span>Your pending balance: <b>{money(s.total)}</b> on {s.n} booking(s). Please pay to keep your bookings safe.</span><Link href="/agent/pay">How to pay</Link></div>;
+  }
+  const count = s?.n || 0;
+  return (
+    <div className="notif-wrap">
+      <button className="notif-btn" onClick={() => setOpen(o => !o)} aria-label="Pending payments">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        {count > 0 && <span className="notif-badge">{count}</span>}
+      </button>
+      {open && count > 0 && (
+        <div className="notif-dropdown">
+          <div className="notif-title">Pending Payments</div>
+          <div className="notif-body">
+            <b>{money(s.total)}</b> pending from {s.agents} agent(s) across {s.n} booking(s).
+          </div>
+          <Link href="/admin/accounts" className="notif-link" onClick={() => setOpen(false)}>Open Accounts &amp; reminders →</Link>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Shell({ role, title, children }) {
@@ -114,6 +135,7 @@ export default function Shell({ role, title, children }) {
             ))}
           </nav>
           <div className="admin-topbar-end">
+            <PendingStrip admin />
             <button className="admin-logout ghost" onClick={() => signOut(router)}>Log out</button>
             <button className="admin-hamburger ghost" aria-label="Menu" onClick={() => setMobileOpen(o => !o)}>
               <Icon name={mobileOpen ? 'close' : 'menu'} size={20} />
@@ -131,16 +153,26 @@ export default function Shell({ role, title, children }) {
           </nav>
         )}
       </header>
-      <PendingStrip admin />
       <main className="admin-page">{typeof children === 'function' ? children(profile) : children}</main>
     </div>
   );
 
   return (
     <div className="topwrap">
-      <header className="topbar">
+      <header className="topbar" ref={navRef}>
         <div className="topbrand"><Logo name={AGENCY_NAME} /><div><strong>{profile.agency_name}</strong><div className="muted small">{sub}</div></div></div>
         <nav className="topnav">{nav.map(([href, icon, label]) => <Link key={href} href={href} className={'toplink' + (active(href) ? ' on' : '')}><Icon name={icon} />{label}</Link>)}<button className="ghost toplogout" onClick={() => signOut(router)}>Log out</button></nav>
+        <button className="ghost topham" aria-label="Menu" onClick={() => setMobileOpen(o => !o)}><Icon name={mobileOpen ? 'close' : 'menu'} size={20} /></button>
+        {mobileOpen && (
+          <nav className="topmob-nav">
+            {nav.map(([href, icon, label]) => (
+              <Link key={href} href={href} className={'topmob-link' + (active(href) ? ' on' : '')} onClick={() => setMobileOpen(false)}>
+                <Icon name={icon} size={16} />{label}
+              </Link>
+            ))}
+            <button className="ghost" style={{ margin: '6px 0 2px', width: '100%' }} onClick={() => signOut(router)}>Log out</button>
+          </nav>
+        )}
       </header>
       <PendingStrip admin={false} />
       <main className="topmain"><h1>{title}</h1>{typeof children === 'function' ? children(profile) : children}</main>

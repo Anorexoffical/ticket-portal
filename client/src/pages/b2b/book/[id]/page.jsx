@@ -28,7 +28,16 @@ export default function Book() {
     supabase.from('flights_with_seats').select('*').eq('id', id).single()
       .then(({ data, error }) => { if (error) setError('Flight not found.'); else setFlight(data); });
     supabase.from('flight_legs').select('*').eq('flight_id', id).then(({ data }) => { if (data) setLegs(legsMap(data)[id] || []); });
-    try { // "Rebook" sends the old passengers here
+    try {
+      // pax_selection: set by the BookModal on the flights page
+      const sel = JSON.parse(sessionStorage.getItem('pax_selection') || 'null');
+      if (sel && sel.flight_id === id && Array.isArray(sel.pax) && sel.pax.length && sel.expires > Date.now()) {
+        setPax(sel.pax.map(p => ({ ...blankPassenger(), ...p })));
+        sessionStorage.removeItem('pax_selection');
+        return;
+      }
+      sessionStorage.removeItem('pax_selection');
+      // legacy rebook
       const r = JSON.parse(sessionStorage.getItem('rebook') || 'null');
       if (r && r.flight_id === id && Array.isArray(r.passengers) && r.passengers.length) {
         setPax(r.passengers.map(p => ({ ...blankPassenger(), ...p })));

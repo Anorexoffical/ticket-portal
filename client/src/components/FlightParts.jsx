@@ -6,7 +6,7 @@ export const fmtNo = n => (/^[A-Z0-9]*[A-Z]/.test(String(n || '').slice(0, 2)) ?
 
 export const Plane = ({ landing }) => (
   <svg viewBox="0 0 24 24" width="18" height="18" style={{ transform: landing ? 'rotate(45deg)' : 'rotate(-45deg)', flex: 'none' }} aria-hidden="true">
-    <path fill="#0284c7" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" />
+    <path fill="#0E4655" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" />
   </svg>
 );
 
@@ -51,12 +51,13 @@ export function LegCols({ f, legs }) {
 const HEAD_CSS = `
 .fzrow{grid-template-columns:1fr 1.5fr 1.1fr 1.5fr 1.1fr .6fr 1.1fr 1.2fr}
 .fzrow.fzadmin{grid-template-columns:28px .9fr 1.3fr 1fr 1.4fr 1fr 1.1fr 1fr 1.1fr 1.2fr}
-.fzcolhead{display:grid;grid-template-columns:1fr 1.5fr 1.1fr 1.5fr 1.1fr .6fr 1.1fr 1.2fr;gap:8px;align-items:center;position:sticky;z-index:15;margin:0 1px 12px;padding:13px 22px;background:#1f5a85;color:#fff;border-radius:12px;font-weight:700;font-size:12.5px;letter-spacing:0;box-shadow:0 4px 14px rgba(15,42,92,.18)}
+.fzcolhead{display:grid;grid-template-columns:1fr 1.5fr 1.1fr 1.5fr 1.1fr .6fr 1.1fr 1.2fr;gap:8px;align-items:center;position:sticky;z-index:15;margin:0 1px 12px;padding:13px 22px;background:#0E4655;color:#fff;border-radius:12px;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 18px rgba(14,70,85,.22)}
 .fzcolhead.fzadmin{grid-template-columns:28px .9fr 1.3fr 1fr 1.4fr 1fr 1.1fr 1fr 1.1fr 1.2fr}
 .fzcolhead>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fzcolhead>div:last-child{text-align:right}
 @media (max-width:1180px){.fzcolhead.fzadmin{display:none}}
 @media (max-width:900px){.fzcolhead{display:none}}
+@media (max-width:700px){.fzrow:not(.fzadmin){grid-template-columns:1fr 1fr!important;min-width:0!important}}
 @media print{.fzcolhead{display:none}}
 `;
 

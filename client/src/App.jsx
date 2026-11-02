@@ -10,7 +10,7 @@ import Pending from './pages/auth/pending/page.jsx';
 import Voucher from './pages/public/voucher/[id]/page.jsx';
 
 import AgentHome from './pages/b2b/page.jsx';
-import B2BFlights from './pages/b2b/page.jsx';
+import B2BFlights from './pages/b2b/flights/page.jsx';
 import AgentBookings from './pages/b2b/bookings/page.jsx';
 import AgentLedger from './pages/b2b/ledger/page.jsx';
 import AgentPay from './pages/b2b/pay/page.jsx';

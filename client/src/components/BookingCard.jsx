@@ -18,7 +18,7 @@ export default function BookingCard({ b, st, legs, admin, actions, children }) {
   const path = codesText({ origin: f.origin, destination: f.destination }, legs).replaceAll(' ', ' › ');
   const paxSummary = TYPES.map(([t, l]) => count(t) ? `${count(t)}${l}` : null).filter(Boolean).join(' · ');
   return (
-    <div className={'bk' + (dead ? ' dead' : '')}>
+    <div className={'bk st-' + st + (dead ? ' dead' : '')}>
       <div className="bkhead">
         <span className="bk-bookno">#{b.booking_no || '-'}</span>
         {admin && <span className="bktag">{b.profiles?.agent_no || '-'}</span>}

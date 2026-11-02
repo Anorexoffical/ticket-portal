@@ -77,15 +77,29 @@ export default function AdminBookings() {
                 actions={<>
                   <SendTicket b={b} onError={setError} />
                   <Link href={`/voucher/${b.id}`}><button type="button" className="ghost">🖨 Print</button></Link>
-                  <button className={open === b.id ? 'bk-btn-manage open' : 'bk-btn-manage'} onClick={() => setOpen(v => v === b.id ? null : b.id)}>
-                    {open === b.id ? '✕ Close' : '⚙ Manage'}
-                  </button>
+                  <button className={open === b.id ? 'bk-btn-manage open' : 'bk-btn-manage'} onClick={() => setOpen(v => v === b.id ? null : b.id)}>{open === b.id ? '✕ Close' : '⚙ Manage'}</button>
                 </>}>
-                {open === b.id && <BookingPanel key={b.id + st} b={b} st={st} bal={bal} onChange={async m => { setMsg(m || ''); setError(''); setOpen(null); await load(); }} onError={setError} />}
               </BookingCard>
             );
           })
       }
+
+      {open && (() => {
+        const b = shown.find(x => x.id === open);
+        if (!b) return null;
+        const st = effectiveStatus(b);
+        const bal = Number(b.total_amount) - Number(b.paid_amount);
+        return (
+          <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setOpen(null); }}>
+            <div className="modal modal-lg">
+              <button className="modal-close" type="button" onClick={() => setOpen(null)}>✕</button>
+              <BookingPanel key={b.id + st} b={b} st={st} bal={bal}
+                onChange={async m => { setMsg(m || ''); setError(''); setOpen(null); await load(); }}
+                onError={setError} />
+            </div>
+          </div>
+        );
+      })()}
     </Shell>
   );
 }

@@ -288,19 +288,21 @@ export default function AdminFlights() {
       {error && <div className="error">{error}</div>}
       {msg && <div className="good">{msg}</div>}
 
-      <div className="flights-bar">
-        <h1 style={{ margin: 0, fontSize: 22, flex: 'none' }}>✈ Flights</h1>
-        <div className="flights-bar-chips">
+      <div className="flights-header-banner">
+        <div className="flights-header-top">
+          <h1 className="flights-header-title">✈ Flights</h1>
+          <div className="flights-header-actions">
+            <label style={{ margin: 0, display: 'flex', gap: 6, alignItems: 'center', fontWeight: 500, fontSize: 13, color: 'rgba(248,242,234,.7)', whiteSpace: 'nowrap' }}>
+              <input type="checkbox" style={{ width: 'auto' }} checked={showOld} onChange={e => setShowOld(e.target.checked)} /> Past flights
+            </label>
+            {selIds.length > 0 && <button className="bad" disabled={busy} onClick={deleteSelected} style={{ minHeight: 36 }}>Delete ({selIds.length})</button>}
+            <button className="btn-add-bulk" onClick={openBulk}><BulkIcon /> Add many</button>
+            <button className="btn-add" onClick={openNew}><PlusIcon /> Add flight</button>
+          </div>
+        </div>
+        <div className="flights-header-tabs">
           <Chip on={type === 'ALL'} onClick={() => pickType('ALL')}>All Types</Chip>
           {types.map(c => <Chip key={c.key} on={type === c.key} onClick={() => pickType(c.key)}>{c.label}</Chip>)}
-        </div>
-        <div className="flights-bar-end">
-          <label style={{ margin: 0, display: 'flex', gap: 6, alignItems: 'center', fontWeight: 500, fontSize: 13, color: '#64748b', whiteSpace: 'nowrap' }}>
-            <input type="checkbox" style={{ width: 'auto' }} checked={showOld} onChange={e => setShowOld(e.target.checked)} /> Past flights
-          </label>
-          {selIds.length > 0 && <button className="bad" disabled={busy} onClick={deleteSelected} style={{ minHeight: 38 }}>Delete ({selIds.length})</button>}
-          <button className="btn-add-bulk" onClick={openBulk}><BulkIcon /> Add many</button>
-          <button className="btn-add" onClick={openNew}><PlusIcon /> Add flight</button>
         </div>
       </div>
 
