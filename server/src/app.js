@@ -1,0 +1,25 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import authRoutes from './routes/auth.routes.js';
+import apiRoutes from './routes/api.routes.js';
+import resourceRoutes from './routes/resource.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
+import { errorHandler } from './middleware/error.js';
+
+const app = express();
+app.disable('x-powered-by');
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(cors({ origin: process.env.CLIENT_ORIGIN, credentials: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
+app.use('/uploads', express.static(path.resolve('uploads')));
+app.get('/api/health', (req, res) => res.json({ ok: true }));
+app.use('/api/auth', authRoutes);
+app.use('/api', uploadRoutes);
+app.use('/api', apiRoutes);
+app.use('/api', resourceRoutes);
+app.use(errorHandler);
+export default app;

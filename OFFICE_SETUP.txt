@@ -1,0 +1,19 @@
+HARMAIN TRAVEL PORTAL - SETUP ON A NEW PC (about 10 minutes)
+
+The website is already ONLINE: https://harmaintravel.vercel.app
+Your data is in Supabase. You only need this folder to (a) test on the PC or (b) publish updates.
+
+STEP 1  Install Node.js (LTS version) from https://nodejs.org  (skip if already installed).
+STEP 2  Extract this zip. Open the folder that contains package.json.
+STEP 3  Click the folder address bar, type cmd, press Enter. Then run:
+          npm install
+STEP 4  To test on this PC:      npm run dev      then open http://localhost:3000
+STEP 5  To publish online:       npx vercel login
+                                 npx vercel link --yes --project harmaintravel
+                                 npx vercel --prod
+        (Step 5 login/link is needed only once per PC.)
+
+IMPORTANT
+- .env.local holds the public database address and public key. Keep it in this folder.
+- NEVER share or paste a Supabase SECRET / service_role key anywhere.
+- "vercel link" can overwrite .env.local. Before you run it, copy .env.local to env.backup.txt.
